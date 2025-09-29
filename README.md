@@ -100,7 +100,7 @@ python eval/measure_latency_merge_simt.py \
 
 Expected throughput: \~190–200 tokens/sec (RTX 4090 GPU)
 
-## Commands for reproducing Figure 1 results
+## Commands for Reproducing Figure 1 Results
 
 ### Figure 1 (b): Single-Scheme Quantization with TCQ-3.25
 
