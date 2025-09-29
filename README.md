@@ -1,6 +1,6 @@
 # Q-Palette
 
-This repository contains code necessary to reproduce the experimental results presented in our paper.
+This repository contains code necessary to reproduce the experimental results presented in [our paper](https://arxiv.org/abs/2509.20214).
 
 ## News
 - **Sep, 2025**: Q-Palette is accepted to **NeurIPS 2025**.
