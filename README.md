@@ -20,6 +20,7 @@ We provide our machine information below for reference to facilitate reproductio
 
 ## Setup
 
+### Option 1. Using Conda
 1. **Initialize environment and install CUDA kernels:**
 
    Navigate to `kernels/` and follow the instructions in the `README.md` file there. This step sets up the conda environment `qpal` and installs the optimized CUDA kernels for Q-Palette.
@@ -30,6 +31,18 @@ We provide our machine information below for reference to facilitate reproductio
 
    ```bash
    pip install -r requirements.txt
+   ```
+
+### Option 2. Using uv
+1. **Initialize environmental variable:""
+   ```bash
+   export CUDA_HOME=<YOUR_CUDA12.4_HOME>
+   export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:.venv/lib/python3.11/site-packages/torch/lib
+   ```
+
+2. **Install Python dependencies and CUDA kernels**
+   ```bash
+   uv sync --preview-features extra-build-dependencies --extra kernels 
    ```
 
 ## Usage
