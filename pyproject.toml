@@ -1,0 +1,56 @@
+[project]
+name = "q-palette"
+version = "0.1.0"
+requires-python = "==3.11.*"
+dependencies = [
+  # CUDA 12.4 인덱스를 기본으로 쓰므로 torch/vision/audio를 deps에 직접 넣습니다.
+  "torch==2.6.0",
+  "torchvision==0.21.0",
+  "torchaudio==2.6.0",
+
+  # 기존 deps
+  "accelerate==0.34.2",
+  "datasets==2.20.0",
+  "glog==0.3.1",
+  "huggingface_hub==0.24.0",
+  "lm-eval==0.4.4",
+  "numpy==2.0.2",
+  "scipy==1.14.1",
+  "setuptools==69.5.1",
+  "tqdm==4.66.4",
+  "transformers==4.45.2",
+  "ortools",
+  "flash1dkmeans",
+
+  # FHT 커널을 git 의존성으로 직접 추가 (원하면 커밋 해시로 고정 가능: ...git@<commit>)
+  "fast-hadamard-transform @ git+https://github.com/Dao-AILab/fast-hadamard-transform.git",
+]
+
+[project.optional-dependencies]
+# 로컬 CUDA 커널들(extra)
+kernels = [
+  "tcq_kernels_cuda",
+  "vq_tensor_kernels_cuda",
+  "sq_pack_gemm",
+  "vq_pack_gemm",
+]
+
+[tool.uv]
+package = false
+# 핵심: CUDA 12.4 인덱스를 기본 인덱스로, PyPI는 보조 인덱스로
+index-url = "https://download.pytorch.org/whl/cu124"
+extra-index-url = ["https://pypi.org/simple"]
+
+# 로컬 경로 매핑 (editable dev 설치)
+[tool.uv.sources]
+tcq_kernels_cuda       = { path = "kernels/tcq-kernels",       editable = true }
+vq_tensor_kernels_cuda = { path = "kernels/vq-tensor-kernels", editable = true }
+sq_pack_gemm           = { path = "kernels/sq-cuda-kernels",   editable = true }
+vq_pack_gemm           = { path = "kernels/vq-cuda-kernels",   editable = true }
+
+[tool.uv.extra-build-dependencies]
+tcq_kernels_cuda       = ["torch==2.6.0"]
+vq_tensor_kernels_cuda = ["torch==2.6.0"]
+sq_pack_gemm           = ["torch==2.6.0"]
+vq_pack_gemm           = ["torch==2.6.0"]
+fast-hadamard-transform = ["torch==2.6.0"]

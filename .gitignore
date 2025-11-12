@@ -1,0 +1,16 @@
+*.ptx
+*.fatbin
+*.fatbin.c
+*.cudafe1.*
+*.module_id
+*.reg.c
+*.ii
+*.cubin
+*.cu.cpp
+*.cu.o
+*.cu.obj
+*.cu.exe
+*.cu.exe.manifest
+*.cu.exe.pdb
+*.so
+uv.lock
