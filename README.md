@@ -53,7 +53,66 @@ We provide our machine information below for reference to facilitate reproductio
 | Data-aware quantization (Table 4) | `Llama-2-7b-hf`, `Llama-2-13b-hf` | **[Link](https://huggingface.co/collections/bdbj/data-aware-quantization-w-q-palette)** |
 
 
-## Usage
+## Commands for Reproducing speedup experiments (Figure 1)
+
+### Figure 1 (b): Single-Scheme Quantization with TCQ-3.25
+
+Evaluate perplexity:
+
+```bash
+python eval_qdict.py --quantizer_str tcomb_6_7_0.5_none_0.9
+```
+
+Evaluate throughput:
+
+```bash
+python eval/measure_latency.py \
+    --hf_path meta-llama/Llama-3.1-8B \
+    --quantizer_str tcomb_6_7_0.5_none_0.9 \
+    --use_inc_mlp --use_inc_attn --print_result
+```
+
+### Figure 1 (c): Latency-Aware MSQ without Fusion
+We provide the exact quantization configuration we used for figure 1 (c) in this codebase as follows:
+
+Evaluate perplexity:
+
+```bash
+python eval_qdict.py --qdict_path msq_results/figure1c/0.0_8.0bit_1.11.pt
+```
+
+Evaluate throughput:
+
+```bash
+python eval/measure_latency_merge_simt.py \
+    --hf_path meta-llama/Llama-3.1-8B \
+    --qdict_path msq_results/figure1c/0.0_8.0bit_1.11.pt \
+    --use_inc_mlp --use_inc_attn \
+    --merge_info_path msq_results/figure1c/0.0_8.0bit_1.11_merge_info.pt \
+    --print_result
+```
+
+### Figure 1 (d): Latency-Aware MSQ with Fusion
+We provide the exact quantization configuration we used for figure 1 (d) in this codebase as follows:
+
+Evaluate perplexity:
+
+```bash
+python eval_qdict.py --qdict_path msq_results/figure1d/0.0_8.0bit_1.17.pt
+```
+
+Evaluate throughput:
+
+```bash
+python eval/measure_latency_merge_simt.py \
+    --hf_path meta-llama/Llama-3.1-8B \
+    --qdict_path msq_results/figure1d/0.0_8.0bit_1.17.pt \
+    --use_inc_mlp --use_inc_attn \
+    --merge_info_path msq_results/figure1d/0.0_8.0bit_1.17_merge_info.pt \
+    --print_result
+```
+
+## General Usage
 
 ### Memory-Constrained Mixed-Scheme Quantization
 
@@ -120,65 +179,6 @@ python eval/measure_latency_merge_simt.py \
 (You may need to modify PYTHONPATH to contain this codebase, i.e., `export PYTHONPATH=./:$PYTHONPATH`)
 
 Expected throughput: \~190–200 tokens/sec (RTX 4090 GPU)
-
-## Commands for Reproducing speedup experiments (Figure 1)
-
-### Figure 1 (b): Single-Scheme Quantization with TCQ-3.25
-
-Evaluate perplexity:
-
-```bash
-python eval_qdict.py --quantizer_str tcomb_6_7_0.5_none_0.9
-```
-
-Evaluate throughput:
-
-```bash
-python eval/measure_latency.py \
-    --hf_path meta-llama/Llama-3.1-8B \
-    --quantizer_str tcomb_6_7_0.5_none_0.9 \
-    --use_inc_mlp --use_inc_attn --print_result
-```
-
-### Figure 1 (c): Latency-Aware MSQ without Fusion
-We provide the exact quantization configuration we used for figure 1 (c) in this codebase as follows:
-
-Evaluate perplexity:
-
-```bash
-python eval_qdict.py --qdict_path msq_results/figure1c/0.0_8.0bit_1.11.pt
-```
-
-Evaluate throughput:
-
-```bash
-python eval/measure_latency_merge_simt.py \
-    --hf_path meta-llama/Llama-3.1-8B \
-    --qdict_path msq_results/figure1c/0.0_8.0bit_1.11.pt \
-    --use_inc_mlp --use_inc_attn \
-    --merge_info_path msq_results/figure1c/0.0_8.0bit_1.11_merge_info.pt \
-    --print_result
-```
-
-### Figure 1 (d): Latency-Aware MSQ with Fusion
-We provide the exact quantization configuration we used for figure 1 (d) in this codebase as follows:
-
-Evaluate perplexity:
-
-```bash
-python eval_qdict.py --qdict_path msq_results/figure1d/0.0_8.0bit_1.17.pt
-```
-
-Evaluate throughput:
-
-```bash
-python eval/measure_latency_merge_simt.py \
-    --hf_path meta-llama/Llama-3.1-8B \
-    --qdict_path msq_results/figure1d/0.0_8.0bit_1.17.pt \
-    --use_inc_mlp --use_inc_attn \
-    --merge_info_path msq_results/figure1d/0.0_8.0bit_1.17_merge_info.pt \
-    --print_result
-```
 
 ## Planned Updates
 The current release provides a minimal implementation to reproduce the main results of the paper.  
