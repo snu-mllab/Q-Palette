@@ -3,6 +3,7 @@ name = "q-palette"
 version = "0.1.0"
 requires-python = "==3.11.*"
 dependencies = [
+  "ipdb",
   # CUDA 12.4 인덱스를 기본으로 쓰므로 torch/vision/audio를 deps에 직접 넣습니다.
   "torch==2.6.0",
   "torchvision==0.21.0",
@@ -21,6 +22,8 @@ dependencies = [
   "transformers==4.45.2",
   "ortools",
   "flash1dkmeans",
+
+  "huggingface_hub",
 
   # FHT 커널을 git 의존성으로 직접 추가 (원하면 커밋 해시로 고정 가능: ...git@<commit>)
   "fast-hadamard-transform @ git+https://github.com/Dao-AILab/fast-hadamard-transform.git",

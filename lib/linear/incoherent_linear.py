@@ -435,7 +435,7 @@ class IncoherentLinear(nn.Module):
             had_left_T = None
         if had_right is not None:
             had_right = had_right.cuda()
-        self.register_buffer('Wscale', torch.ones(out_features, dtype=self.dtype), persistent=False)
+        self.register_buffer('Wscale', torch.ones(out_features, dtype=self.dtype), persistent=True)
         self.register_buffer('had_right', had_right, persistent=False)
         self.register_buffer('had_left_T', had_left_T, persistent=False)
         self.K_left = K_left

@@ -8,8 +8,6 @@ import torch
 import transformers
 
 from model.llama import LlamaForCausalLM
-from model.rotated_llama import RotatedLlamaForCausalLM
-from model.incoherent_llama import IncoherentLlamaForCausalLM
 def model_from_hf_path(path, max_mem_ratio=0.7, device_map=None):
 
     # AutoConfig fails to read name_or_path correctly
@@ -23,16 +21,6 @@ def model_from_hf_path(path, max_mem_ratio=0.7, device_map=None):
             model_cls = LlamaForCausalLM
         else:
             raise Exception
-    elif bad_config.architectures[0] == "IncoherentLlamaForCausalLM":
-        print("incoherent llama")
-        model_cls = IncoherentLlamaForCausalLM
-        model_str = transformers.LlamaConfig.from_pretrained(
-                path)._name_or_path
-    elif bad_config.architectures[0] == "RotatedLlamaForCausalLM":
-        print("rotated llama")
-        model_cls = RotatedLlamaForCausalLM
-        model_str = transformers.LlamaConfig.from_pretrained(
-                path)._name_or_path
     else:
         if model_type == 'llama':
             model_cls = LlamaForCausalLM
