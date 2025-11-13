@@ -8,6 +8,7 @@ from transformers import AutoTokenizer
 from model.cache_utils import StaticCache
 
 from lib.utils.unsafe_import import model_from_hf_path
+from lib.config import QUANTKEY2STR
 
 torch.set_grad_enabled(False)
 torch._inductor.config.coordinate_descent_tuning = True
@@ -30,11 +31,11 @@ def load_quant_model(model, args):
         raise ValueError(f"Model name {args.hf_path} not supported")
     
     nlayers = len(model.model.layers)
-    if args.quantizer_str is not None:
+    if args.quantizer_key is not None:
         qdict = {}
         for i in range(nlayers):
             for key in ["self_attn.q_proj", "self_attn.k_proj", "self_attn.v_proj", "self_attn.o_proj", "mlp.gate_proj", "mlp.up_proj", "mlp.down_proj"]:
-                qdict[f"{i}_{key}"] = args.quantizer_str
+                qdict[f"{i}_{key}"] = QUANTKEY2STR[args.quantizer_key]
     else:
         qdict = torch.load(args.qdict_path)
         for i in range(nlayers):
@@ -191,7 +192,7 @@ def main(hf_path, compile, max_tokens, enable_flash, num_samples, args, print_re
         model.model.layers = model.model.layers[:args.num_hidden_layers]
     model = model.to(torch.float16)
     
-    if args.quantizer_str is not None or args.qdict_path is not None:
+    if args.quantizer_key is not None or args.qdict_path is not None:
         model = load_quant_model(model, args)
                                                    
     
@@ -281,7 +282,7 @@ def main(hf_path, compile, max_tokens, enable_flash, num_samples, args, print_re
     result_dict = {
         "average_tokens_per_sec": torch.mean(torch.tensor(aggregate_metrics['tokens_per_sec'])).item(),
         "generated_tokens": max_tokens,
-        "quantizer_str": args.quantizer_str,
+        "quantizer_key": args.quantizer_key,
         "qdict_path": args.qdict_path,
         "use_inc_mlp": args.use_inc_mlp,
         "use_inc_attn": args.use_inc_attn,
@@ -358,7 +359,7 @@ if __name__ == '__main__':
     parser.add_argument('--print_result',
                         action='store_true',
                         help='Whether to print the result.')
-    parser.add_argument('--quantizer_str', 
+    parser.add_argument('--quantizer_key', 
                         type=str,
                         default=None,
                         help='Quantizer string.')

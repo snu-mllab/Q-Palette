@@ -11,7 +11,7 @@ from tqdm import tqdm
 from lib.linear.incoherent_linear import IncoherentLinear
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from lib.utils import gptq_data_utils
-from lib.config import MODEL_KEYS
+from lib.config import MODEL_KEYS, QUANTKEY2STR
 torch.set_grad_enabled(False)
 
 def eval_model(model, devset):
@@ -81,11 +81,11 @@ def main(args):
         results = torch.load(result_path)
         print(f"Loaded results from {result_path}")
         return
-    if args.quantizer_str is None:
+    if args.quantizer_key is None:
         qdict = torch.load(args.qdict_path)
     else:
-        qdict = args.quantizer_str
-        args.qdict_path = f"msq_results/{model_key}/{args.quantizer_str}.pt"
+        qdict = QUANTKEY2STR[args.quantizer_key]
+        args.qdict_path = f"msq_results/{model_key}/{args.quantizer_key}.pt"
 
     print("="*100)
     model = load_model(model, qdict, args.save_dir, model_key, seed=args.seed).cuda().to(torch.float16)
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', default='meta-llama/Llama-3.1-8B', type=str)
     parser.add_argument('--seed', default=0, type=int)
     parser.add_argument('--qdict_path', default='./msq_results/figure1d/0.0_8.0bit_1.17.pt', type=str)
-    parser.add_argument('--quantizer_str', default=None, type=str)
+    parser.add_argument('--quantizer_key', default=None, type=str)
     parser.add_argument('--left_only', action='store_true')
     parser.add_argument('--ctx_size', default=8192, type=int)
     parser.add_argument('--save_dir', default='quant_results/', type=str)

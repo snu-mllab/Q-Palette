@@ -43,6 +43,7 @@ We provide our machine information below for reference to facilitate reproductio
 2. **Install Python dependencies and CUDA kernels**
    ```bash
    uv sync --preview-features extra-build-dependencies --extra kernels 
+   source .venv/bin/activate
    ```
 
 ## Pre-quantized Models
@@ -52,6 +53,73 @@ We provide our machine information below for reference to facilitate reproductio
 | Data-free quantization (Figure 1, 5, Table 3) | `Llama-3.1-8B`, `Llama-3.1-70B`, `Llama-3.2-1B`, `Llama-3.2-3B`, `Qwen-2.5-7B` | **[Link](https://huggingface.co/collections/bdbj/data-free-quantization-w-q-palette)** |
 | Data-aware quantization (Table 4) | `Llama-2-7b-hf`, `Llama-2-13b-hf` | **[Link](https://huggingface.co/collections/bdbj/data-aware-quantization-w-q-palette)** |
 
+## General Usage
+
+### Memory-Constrained Mixed-Scheme Quantization
+
+Example usage:
+
+```bash
+python solve_mem_const.py --model meta-llama/Llama-3.1-8B --target_bitwidth 3.25
+```
+
+* `--model`: Hugging Face model name or path
+* `--target_bitwidth`: Target average bitwidth for memory constraint
+
+The resulting quantization configuration is stored at:
+
+```
+codes/msq_results/3_8b/mem_constrained/default/3.25bit.pt
+```
+
+Evaluate the resulting model's perplexity on WikiText2 (takes about 1–2 hours for the 1st quantization):
+
+```bash
+python eval_qdict.py --qdict_path msq_results/3_8b/mem_constrained/default/3.25bit.pt
+```
+
+Expected perplexity: \~6.10
+
+### Latency-Constrained Mixed-Scheme Quantization (MSQ)
+
+Example usage:
+
+```bash
+python solve_lat_const.py --target_thp 200 
+```
+
+* `--target_thp`: Target throughput (tokens/sec) at batch size=1 on an RTX 4090 GPU.
+* `--use_cc`: Flag that enables CUDA-Core implementation (optional).
+* `--no_fuse`: Flag that disables fusion-aware MSQ.
+
+The resulting configurations are quickly saved at:
+
+```
+codes/msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp.pt
+codes/msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp_merge_info.pt
+```
+
+Evaluate WikiText2 perplexity (about 1–2 hours for the 1st quantization):
+
+```bash
+python eval_qdict.py --qdict_path msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp.pt
+```
+
+Expected perplexity: \~6.37
+
+Evaluate throughput:
+
+```bash
+python eval/measure_latency_merge_simt.py \
+    --hf_path meta-llama/Llama-3.1-8B \
+    --qdict_path msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp.pt \
+    --use_inc_mlp --use_inc_attn \
+    --merge_info_path msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp_merge_info.pt \
+    --print_result
+```
+(You may need to modify PYTHONPATH to contain this codebase, i.e., `export PYTHONPATH=./:$PYTHONPATH`)
+
+Expected throughput: \~190–200 tokens/sec (RTX 4090 GPU)
 
 ## Commands for Reproducing speedup experiments (Figure 1)
 
@@ -60,7 +128,7 @@ We provide our machine information below for reference to facilitate reproductio
 Evaluate perplexity:
 
 ```bash
-python eval_qdict.py --quantizer_str tcomb_6_7_0.5_none_0.9
+python eval_qdict.py --quantizer_key tcq-3.25
 ```
 
 Evaluate throughput:
@@ -68,7 +136,7 @@ Evaluate throughput:
 ```bash
 python eval/measure_latency.py \
     --hf_path meta-llama/Llama-3.1-8B \
-    --quantizer_str tcomb_6_7_0.5_none_0.9 \
+    --quantizer_str tcq-3.25 \
     --use_inc_mlp --use_inc_attn --print_result
 ```
 
@@ -112,83 +180,16 @@ python eval/measure_latency_merge_simt.py \
     --print_result
 ```
 
-## General Usage
-
-### Memory-Constrained Mixed-Scheme Quantization
-
-Example usage:
-
-```bash
-python solve_mem_const.py --model meta-llama/Llama-3.1-8B --target_bitwidth 3.25
-```
-
-* `--model`: Hugging Face model name or path
-* `--target_bitwidth`: Target average bitwidth for memory constraint
-
-The resulting quantization configuration is stored at:
-
-```
-codes/msq_results/3_8b/mem_constrained/default/3.25bit.pt
-```
-
-Evaluate the resulting model's perplexity on WikiText2 (takes about 1–2 hours):
-
-```bash
-python eval_qdict.py --qdict_path msq_results/3_8b/mem_constrained/default/3.25bit.pt
-```
-
-Expected perplexity: \~6.10
-
-### Latency-Constrained Mixed-Scheme Quantization (MSQ)
-
-Example usage:
-
-```bash
-python solve_lat_const.py --target_thp 200 
-```
-
-* `--target_thp`: Target throughput (tokens/sec) at batch size=1 on an RTX 4090 GPU.
-* `--use_cc`: Flag that enables CUDA-Core implementation (optional).
-* `--no_fuse`: Flag that disables fusion-aware MSQ.
-
-The resulting configurations are quickly saved at:
-
-```
-codes/msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp.pt
-codes/msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp_merge_info.pt
-```
-
-Evaluate WikiText2 perplexity (about 1–2 hours):
-
-```bash
-python eval_qdict.py --qdict_path msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp.pt
-```
-
-Expected perplexity: \~6.37
-
-Evaluate throughput:
-
-```bash
-python eval/measure_latency_merge_simt.py \
-    --hf_path meta-llama/Llama-3.1-8B \
-    --qdict_path msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp.pt \
-    --use_inc_mlp --use_inc_attn \
-    --merge_info_path msq_results/3_8b/lat_constrained/4090_cc/default_err/200.0thp_merge_info.pt \
-    --print_result
-```
-(You may need to modify PYTHONPATH to contain this codebase, i.e., `export PYTHONPATH=./:$PYTHONPATH`)
-
-Expected throughput: \~190–200 tokens/sec (RTX 4090 GPU)
-
 ## Planned Updates
 The current release provides a minimal implementation to reproduce the main results of the paper.  
 
 Planned updates include:
-- [ ] Release code for loss and cost term computation
-- [ ] Add tutorials and usage examples for practitioners
-- [ ] Broader model, kernel, and usability support
 - [x] Setup support with `uv`
 - [x] Upload HuggingFace checkpoints for some key results
+- [ ] Add tutorials and usage examples for practitioners
+- [ ] Broader model, kernel, and usability support
+- [ ] Clean evaluation code
+- [ ] Release code for loss and cost term computation
 
 Stay tuned!
 
