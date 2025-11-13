@@ -45,6 +45,14 @@ We provide our machine information below for reference to facilitate reproductio
    uv sync --preview-features extra-build-dependencies --extra kernels 
    ```
 
+## Pre-quantized Models
+
+| Type | Models | 🤗 Hugging Face |
+|:---|:---|:---|
+| Data-free quantization (Figure 1, 5, Table 3) | `Llama-3.1-8B`, `Llama-3.1-70B`, `Llama-3.2-1B`, `Llama-3.2-3B`, `Qwen-2.5-7B` | **[Link](https://huggingface.co/collections/bdbj/data-free-quantization-w-q-palette)** |
+| Data-aware quantization (Table 4) | `Llama-2-7b-hf`, `Llama-2-13b-hf` | **[Link](https://huggingface.co/collections/bdbj/data-aware-quantization-w-q-palette)** |
+
+
 ## Usage
 
 ### Memory-Constrained Mixed-Scheme Quantization
@@ -113,7 +121,7 @@ python eval/measure_latency_merge_simt.py \
 
 Expected throughput: \~190–200 tokens/sec (RTX 4090 GPU)
 
-## Commands for Reproducing Figure 1 Results
+## Commands for Reproducing speedup experiments (Figure 1)
 
 ### Figure 1 (b): Single-Scheme Quantization with TCQ-3.25
 
