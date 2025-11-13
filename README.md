@@ -184,11 +184,11 @@ python eval/measure_latency_merge_simt.py \
 The current release provides a minimal implementation to reproduce the main results of the paper.  
 
 Planned updates include:
-- Release code for loss and cost term computation
-- Add tutorials and usage examples for practitioners
-- Broader model, kernel, and usability support
-- Setup support with `uv`
-- Upload HuggingFace checkpoints for some key results
+- [ ] Release code for loss and cost term computation
+- [ ] Add tutorials and usage examples for practitioners
+- [ ] Broader model, kernel, and usability support
+- [x] Setup support with `uv`
+- [x] Upload HuggingFace checkpoints for some key results
 
 Stay tuned!
 
