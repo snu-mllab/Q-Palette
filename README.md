@@ -53,7 +53,7 @@ We provide our machine information below for reference to facilitate reproductio
 | Data-aware quantization (Table 4) | `Llama-2-7b-hf`, `Llama-2-13b-hf` | **[Link](https://huggingface.co/collections/bdbj/data-aware-quantization-w-q-palette)** |
 
 
-## Commands for Reproducing speedup experiments (Figure 1)
+## Commands for Reproducing Speedup Experiments (Figure 1)
 
 ### Figure 1 (b): Single-Scheme Quantization with TCQ-3.25
 
