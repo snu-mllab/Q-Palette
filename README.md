@@ -34,7 +34,7 @@ We provide our machine information below for reference to facilitate reproductio
    ```
 
 ### Option 2. Using uv
-1. **Initialize environmental variable:""
+1. **Initialize environmental variable:**
    ```bash
    export CUDA_HOME=<YOUR_CUDA12.4_HOME>
    export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:.venv/lib/python3.11/site-packages/torch/lib
@@ -121,7 +121,7 @@ python eval/measure_latency_merge_simt.py \
 
 Expected throughput: \~190–200 tokens/sec (RTX 4090 GPU)
 
-## Commands for Reproducing speedup experiments (Figure 1)
+## Commands for Reproducing Speedup Experiments (Figure 1)
 
 ### Figure 1 (b): Single-Scheme Quantization with TCQ-3.25
 
