@@ -1,3 +1,4 @@
+DEVDIR = "set appropriate path"
 MODEL_KEYS = {
     "meta-llama/Llama-3.1-8B": "3_8b",
     "meta-llama/Llama-3.2-1B": "3_1b",

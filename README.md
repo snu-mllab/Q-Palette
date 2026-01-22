@@ -180,16 +180,28 @@ python eval/measure_latency_merge_simt.py \
     --print_result
 ```
 
+# Loss term computation
+
+We provide code to compute the sensitivity coefficients \(a_l\) (saved as `err_coeffs`, e.g., `assets/3_8b_err_coeffs.pt`) used in our paper.
+
+See `calc_loss_term.sh` for a reference workflow that generates the loss-term via:
+- `gen_dev.py`
+- `gen_eval_noise_kl.py`
+- `gen_err_coeff.py`
+
+For reference, intermediate files for LLaMA-3.1-8B, LLaMA-3.2-1B, and 3B are available here: https://drive.google.com/drive/folders/1tq7zaN2xSEkQ0ZRR6VJFDsvJYFYmTy-v?usp=sharing
+
+
 ## Planned Updates
 The current release provides a minimal implementation to reproduce the main results of the paper.  
 
 Planned updates include:
 - [x] Setup support with `uv`
 - [x] Upload HuggingFace checkpoints for some key results
+- [x] Release code for loss term computation
 - [ ] Add tutorials and usage examples for practitioners
 - [ ] Broader model, kernel, and usability support
 - [ ] Clean evaluation code
-- [ ] Release code for loss and cost term computation
 
 Stay tuned!
 
